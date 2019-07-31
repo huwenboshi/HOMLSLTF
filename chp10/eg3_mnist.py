@@ -63,8 +63,23 @@ def main():
     saver = tf.train.Saver()
 
     # load data
-    #mnist = input_data.read_data_sets("/n/groups/price/huwenbo/EXPLORE/DL/HOMLSLTF/chp10/mnist")
+    mnist = input_data.read_data_sets("/n/groups/price/huwenbo/EXPLORE/DL/HOMLSLTF/chp10/mnist")
 
+    n_epochs = 40
+    batch_size = 50
+
+    with tf.Session() as sess:
+        init.run()
+        for epoch in range(n_epochs):
+            for iteration in range(mnist.train.num_examples // batch_size):
+                X_batch, y_batch = mnist.train.next_batch(batch_size)
+                sess.run(training_op, feed_dict={X: X_batch, y: y_batch})
+            acc_train = accuracy.eval(feed_dict={X: X_batch, y: y_batch})
+            acc_val = accuracy.eval(feed_dict={X: mnist.validation.images,
+                                               y: mnist.validation.labels})
+            print(epoch, 'Train accuracy:', acc_train, "Val accuracy", acc_val)
+
+        save_path = saver.save(sess, './my_model_final.ckpt')
 
 if __name__ == '__main__':
     main()
